@@ -22,23 +22,35 @@ def resplit_by_label(root,annotatsions,dest_root):
         categories = annotatsions['categories']
         
         category_id_to_name = {cat['id']:cat['name'] for cat in categories}
+        
         categories_for_dataset = {cat:[] for cat in category_id_to_name}
+        # for multiple categories
+        categories_for_dataset[11111] = []
+        category_id_to_name[11111] = 'MultLabel'
 
         
         n_images = len(images)
         
         for i in range(n_images):
             
+            
             image = images[i]
-            image_id = image['id']
-            image_annotations = [ann for ann in annotatsions['annotations'] if ann['image_id'] == image_id][0]
-            image_category_id = image_annotations['category_id']
             image_filename = image['file_name']
+            image_id = image['id']
+            image_annotations = [ann for ann in annotatsions['annotations'] if ann['image_id'] == image_id]
+            
+            # if image is multilabel, add it to the multilabel category
+            image_categories = list({ann['category_id'] for ann in image_annotations})
+            
+            image_category_id = image_categories[0] if len(image_categories) == 1 else 11111
+            
+            # print(image_annotations)
+            # continue
             
             categories_for_dataset[image_category_id].append(image_filename)
             # print(image_annotations)
             
-            
+        # quit()
         # print({id:len(value) for id, value in categories_for_dataset.items()})   
         
         # save the images to the destination folder

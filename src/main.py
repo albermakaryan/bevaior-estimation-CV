@@ -10,5 +10,5 @@ if __name__ == "__main__":
     if split:
         concat_annotations(root,'./full_data/')
         concat_images(root,'./full_data/full_images/')
-        resplit_by_label("./full_data/full_images/","./full_data/full_annotations.json","./full_data/splitted_by_label/")
+    resplit_by_label("./full_data/full_images/","./full_data/full_annotations.json","./full_data/splitted_by_label/")
    
