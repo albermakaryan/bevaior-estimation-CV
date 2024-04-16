@@ -1,0 +1,10 @@
+ultralytics
+torch
+torchvision
+matplotlib
+pillow
+icecream
+boto3
+opencv-python
+PyAV
+

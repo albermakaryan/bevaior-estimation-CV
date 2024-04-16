@@ -1,0 +1,4 @@
+src/coco_data/
+src/full_data/
+**/__pycache__/
+**/.ipynb_checkpoints
