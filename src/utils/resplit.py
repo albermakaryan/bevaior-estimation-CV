@@ -9,7 +9,8 @@ import os
 import shutil
 import json
 from copy import deepcopy
-
+import numpy as np
+import shutil
 
 def resplit_by_label(root,annotatsions,dest_root):
     
@@ -223,6 +224,67 @@ def resplit_by_nnps(root,full_annotations_path,dest_root):
                 print(f"Failed to copy {image_path} to {dest_path}")
     
     
-def resplit_sets_by_nnps(root,full_annotations_path,dest_root):
+def resplit_sets_by_nnps(root,full_annotations_path,dest_root,train_size,test_size):
     
-    pass
+    nnps = ['Natural', 'Negative', 'Positive', 'Surprise']
+    
+    
+    n_nnps = len(nnps)
+    
+    
+    with open(full_annotations_path,'r') as file:
+        
+        full_annotations = json.load(file)
+        categories = full_annotations['categories']
+        annotations = full_annotations['annotations']
+
+        
+        cat_id_to_name = {cat['id']:cat['name'] for cat in categories}
+        cat_name_to_id = {cat['name']:cat['id'] for cat in categories}
+        nnps_by_label = {cat['id']:[] for cat in categories}
+        full_images = full_annotations['images']
+        
+        
+        n_annotations = len(annotations)
+        
+        for i in range(n_annotations):
+            
+            ann = deepcopy(annotations[i])
+            
+            cat_id = ann['category_id']
+            
+            nnps_by_label[cat_id].append(ann)
+            
+            # print(ann)
+            # break        
+        
+        
+        n_by_cat = {cat:len(value) for cat,value in nnps_by_label.items()}
+        
+        
+        # get the samples
+        min_count = min(list(n_by_cat.values()))
+        
+        
+        np.random.seed(123)
+        nnps_by_label_samples = {cat:np.random.choice(value,min_count,replace=False) for cat,value in nnps_by_label.items()}
+        
+        
+        
+        # print(nnps_by_label_samples)
+        
+        
+        
+        # for cat in nnps_by_label_samples:
+        #     # 
+        #     print(cat,len(nnps_by_label_samples[cat]))
+        
+        
+        train_size = int(train_size * min_count)
+        test_size = int(test_size * min_count ) 
+        valid_size = min_count - train_size - test_size
+        
+        nnps_by_label_images = []
+        
+             
+        # iterate and move the the right way
