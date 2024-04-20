@@ -223,3 +223,6 @@ def resplit_by_nnps(root,full_annotations_path,dest_root):
                 print(f"Failed to copy {image_path} to {dest_path}")
     
     
+def resplit_sets_by_nnps(root,full_annotations_path,dest_root):
+    
+    pass
