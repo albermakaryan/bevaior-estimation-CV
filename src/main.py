@@ -1,6 +1,6 @@
 from utils.concat import concat_images,concat_annotations
 from utils.resplit import resplit_by_label, resplit_by_nnps,resplit_sets_by_nnps
-from cvmodels.yolov7 import detect
+# from cvmodels.yolov7 import detect
 
 if __name__ == "__main__":
     
@@ -22,9 +22,9 @@ if __name__ == "__main__":
         # combine the labels with the nnps [Negative, Positive, Natural, Surprise]
         resplit_by_nnps("./data/full_data/full_images","./data/full_data/full_annotations.json","./data/full_data/full_nnps")
         
-    root = "./data/full_data/full_nnps/nnps_full_images"
-    ann_path = "./data/full_data/full_nnps/nnps_annotations.json"
+    # root = "./data/full_data/full_nnps/nnps_full_images"
+    # ann_path = "./data/full_data/full_nnps/nnps_annotations.json"
     
     
-    resplit_sets_by_nnps(root,ann_path,'')
+    # resplit_sets_by_nnps(root,ann_path,'',train_size=.8,test_size=.1)
     
