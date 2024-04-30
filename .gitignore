@@ -1,5 +1,4 @@
-src/data/coco_data/
-src/data/full_data/
+src/data/
 **/__pycache__/
 **/.ipynb_checkpoints
 src/cvmodels/yolov7/

@@ -1,91 +1,183 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import PIL
-
-import sys
-sys.path.append('../helper_functions')
-from helper_functions.helper import annotation_extractor
-from icecream import ic
 import os
+import json
+from utils.functions import get_image_annotations
+import cv2
 
 
 
+def get_annotated_image(original_image,annotationes,categories,
+                           font = cv2.FONT_HERSHEY_SIMPLEX,
+                           font_scale = 1,
+                           color = (255, 0, 0),
+                           thickness = 2):
 
-
-def show_images(annotation_file_path,image_root,number_of_images=12,image_file_names=None):
-
-        """
-        Shows images with bounding boxes and labels. 
-        If no image file names are given, it shows random images from the image root.
-        
-        Parameters
-        ----------
-        annotation_file_path: str
-            Path to the annotation file
-        image_root: str
-            Path to the image folder
-        number_of_images: int
-            Number of images to show
-        image_file_names: list
-            List of image file names to show
-            
-            
-        Returns
-        -------
-        None
-        """
-        
-        if len(image_file_names) == 0:
-            
-            # image_file_names = os.listdir(IMAGE_PATH)
-            
-            image_file_names = np.random.choice(os.listdir(image_root),size=number_of_images,replace=False)
-            
-        plt.figure(figsize=(20,20))
-        
-
-        for i in range(len(image_file_names)):
-            
-            image_file_name = image_file_names[i]
-            
-            image_path = os.path.join(image_root,image_file_name)
-            
-            annotations = annotation_extractor(annotation_file_path=annotation_file_path,image_file_name=image_file_name)
-            # ic(annotations)
-            image = plt.imread(image_path)
-            
-            columns = 4 if number_of_images > 4 else number_of_images
-            rows = number_of_images//columns if number_of_images%columns == 0 else number_of_images//columns + 1
-            
-            
-            plt.subplot(rows,columns,i+1)
-            plt.imshow(image)
-            plt.grid(True)
-            
-            for i in range(len(annotations['label'])):
-                
-                bbox = annotations['bbox'][i]
-                category = annotations['category'][i]
-                label = annotations['label'][i]
-
-                
-                x_start = bbox[0]
-                y_start = bbox[1]
-                x_end = x_start + bbox[2]
-                y_end = y_start + bbox[3]
-                
-                plt.plot([x_start,x_end,x_end,x_start,x_start],[y_start,y_start,y_end,y_end,y_start])
-                plt.text(x_end,y_end,f"{label} : {category}")
-                
-        plt.show()     
-        
-        
-        
-        
-        
-if __name__ == "__main__":
+    image = original_image.copy()
     
-    ANNOTATION_PATH = "../../DATA/Data_COCO/annotations.coco.json"
-    IMAGE_PATH = "../../DATA/Data_COCO/images"
+    for img_ann in annotationes:
+        
+        x_1,y_1,x_2,y_2 = [int(x) for x in img_ann['bbox']]
+        x_1,y_1 = x_1,y_1
+        x_2,y_2 = x_2,y_2
+        cat_id = img_ann['category_id']
+        cat_name = [cat['name'] for cat in categories if cat['id'] == cat_id][0]
     
-    show_images(annotation_file_path=ANNOTATION_PATH,number_of_images=1)
+        cv2.rectangle(image,(x_1,y_1),(x_1+x_2,y_1+y_2),(0,255,0),2)
+        cv2.putText(image, cat_name, (x_1,y_1+20), font, font_scale, color, thickness)
+        
+    return image
+
+
+
+
+def plot_image_with_annotations_comparison(image_root_new,image_root_old,annotations_file_balanced,annotations_file_original,number_of_iamges=8):
+
+
+    with open(annotations_file_balanced,"r") as file_new, open(annotations_file_original,'r') as file_orig:
+
+        balanced_annotations_full = json.load(file_new)
+        original_annotations_full = json.load(file_orig)
+
+        images = balanced_annotations_full['images']
+        categories = balanced_annotations_full['categories']
+
+        new_annotationes = balanced_annotations_full['annotations']
+        old_annotationes = original_annotations_full['annotations']
+
+        # construct a subplot
+
+        cols = 2
+        rows = number_of_iamges
+
+        fig,ax = plt.subplots(rows,cols)
+
+        fig.set_figheight(30)
+        fig.set_figwidth(20)
+
+        # iterate
+        j = 50
+
+        for i in range(number_of_iamges):
+
+            # get those which are multilabeled
+
+            while True:
+                
+                image = images[j]
+                image_id = image['id']
+                
+                image_file = image['file_name']
+                new_image_annotations = get_image_annotations(image_id,new_annotationes)
+                old_image_annotations = get_image_annotations(image_id,old_annotationes)
+                n_annotationes = len(new_image_annotations)
+                j += 1
+                
+                # print(len(old_image_annotationes))
+                if n_annotationes > 1:
+                    break
+
+
+            old_image = plt.imread(os.path.join(image_root_old,image_file)).copy()
+            new_image = plt.imread(os.path.join(image_root_new,image_file)).copy()
+
+            # old annotationes
+            old_image = get_annotated_image(old_image,old_image_annotations,categories)
+            # new annotationes
+            new_image = get_annotated_image(new_image,new_image_annotations,categories)
+            
+            ax[i][0].imshow(old_image)
+            ax[i][0].set_title("Old image")
+            
+            ax[i][1].imshow(new_image)
+            ax[i][1].set_title("New image")        
+
+        plt.show()
+
+
+        
+    
+
+
+
+def plot_image_with_annotations(image_root,annotations_file,number_of_iamges=8,multilabel=False):
+
+
+    with open(annotations_file,"r") as file:
+
+        annotations_full = json.load(file)
+
+        images = annotations_full['images']
+        categories = annotations_full['categories']
+
+        annotationes = annotations_full['annotations']
+
+        # construct a subplot
+
+        cols = 2
+        rows = int(number_of_iamges/2)
+
+        fig,ax = plt.subplots(rows,cols)
+
+        fig.set_figheight(30)
+        fig.set_figwidth(20)
+        axes = ax.flatten()
+
+        # iterate
+        j = 0
+        for i in range(number_of_iamges):
+
+            # get those which are multilabeled
+
+            while True:
+                
+                image = images[j]
+                image_id = image['id']
+                
+                image_file = image['file_name']
+                image_annotations = get_image_annotations(image_id,annotationes)
+                n_annotationes = len(image_annotations)
+                j += 1
+                
+                # print(len(old_image_annotationes))
+                if n_annotationes > 1 or not multilabel:
+                    break
+
+
+            orig_image = plt.imread(os.path.join(image_root,image_file)).copy()
+
+            # old annotationes
+            orig_image = get_annotated_image(orig_image,image_annotations,categories)
+            # new annotationes
+            
+            axes[i].imshow(orig_image)
+            axes[i].set_title(f"Image {i+1} with annotationes")
+            
+
+        plt.show()
+
+
+        
+    pass
+    
+
+
+def plot_label_counts(counts,title=None):
+
+
+    title = 'Counts of labels' if title is None else title
+
+
+    plt.figure(figsize=(10,7))
+    plt.bar(counts['Label'],counts['Count'])
+
+    for i,value in enumerate(counts.Count):
+        percent = counts.Proportion.values[i]
+        plt.text(i, value, f"{str(value)}[{percent}%]", ha='center', va='bottom')
+
+    if len(counts.Label) > 6:
+        plt.xticks(rotation=45)
+    plt.xlabel("Emotion")
+    plt.ylabel("Count")
+    plt.title(title)
+    plt.show()
+    
