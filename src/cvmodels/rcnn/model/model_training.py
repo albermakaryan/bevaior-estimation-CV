@@ -5,9 +5,9 @@ import sys
 sys.path.append('./rcnn')
 import os
 
-from rcnn.train import train_rccn
-from rcnn.model import faster_rccn
-from rcnn.dataset import RCNN_Dataset
+from model.train import train_rccn
+from model.model import faster_rccn
+from model.dataset import RCNN_Dataset
 from helper_functions.collate import collate_fn
 from icecream import ic
 
@@ -16,7 +16,7 @@ warnings.filterwarnings('ignore')
 
 
 
-def train_model(model,batch_size=4,lerning_rate=0.001,
+def train_model(model=None,batch_size=1,lerning_rate=0.001,
                 epochs=30,mode_save_root='trained_models',
                 optimizer=None,
                 TRAIN_ROOT = "../DATA/Data/train",
@@ -57,12 +57,20 @@ def train_model(model,batch_size=4,lerning_rate=0.001,
     None
     """
 
+
+    model = faster_rccn() if model is None else model
+    
+
+    
     train_set = RCNN_Dataset(image_directory=TRAIN_ROOT,annotation_file_path=ANNOTAION_PATH)
     validation_set = RCNN_Dataset(image_directory=VALIDATION_ROOT,annotation_file_path=ANNOTAION_PATH)
 
 
     train_dataloader = DataLoader(dataset=train_set,batch_size=batch_size,shuffle=True,collate_fn=collate_fn)
     validation_dataloader = DataLoader(dataset=validation_set,batch_size=batch_size,shuffle=True,collate_fn=collate_fn)
+    
+    # print(train_dataloader.dataset[0][1]['boxes'].shape)
+    # quit()
 
 
 
@@ -87,7 +95,8 @@ def train_model(model,batch_size=4,lerning_rate=0.001,
             train_dataloader=train_dataloader,
             validation_dataloader=validation_dataloader,
             device=device,
-            epochs=epochs)
+            epochs=epochs,
+            verbose=True)
 
 
     torch.save(model,model_save_path)

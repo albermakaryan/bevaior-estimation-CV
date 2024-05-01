@@ -14,9 +14,6 @@ from helper_functions.helper import annotation_extractor
 
 
 
-
-
-
 class RCNN_Dataset(Dataset):
     
     
@@ -43,8 +40,13 @@ class RCNN_Dataset(Dataset):
             
         
         """
+        
+        # if os.path.exists(image_directory):
+        #     print("Image directory exists.")
+        # quit()
         self.image_directory = image_directory
-        self.files = os.listdir(self.image_directory)
+        self.files = [file for file in os.listdir(self.image_directory) if not file.endswith('.json')]
+        # self.files = os.listdir(self.image_directory)
         self.annotation_file_path = annotation_file_path
         
 
@@ -127,6 +129,9 @@ class RCNN_Dataset(Dataset):
         
     
            
+        # ic(type(target['boxes']))
+        # ic(target['boxes'].shape)
+        # quit()
         return image,target  
 
 
