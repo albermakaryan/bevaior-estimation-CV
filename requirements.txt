@@ -38,6 +38,9 @@ icecream # better print debugging
 PyAV # video IO
 ultralytics # yolo
 boto3 # AWS S3
+icecream
+keras
+
 
 
 # albumentations>=1.0.3
