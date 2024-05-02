@@ -58,7 +58,6 @@ def train_model(model=None,batch_size=1,lerning_rate=0.001,
     """
 
 
-    model = faster_rccn() if model is None else model
     
 
     
@@ -72,6 +71,10 @@ def train_model(model=None,batch_size=1,lerning_rate=0.001,
     # print(train_dataloader.dataset[0][1]['boxes'].shape)
     # quit()
 
+
+    # ic(len(train_dataloader))
+    # ic(train_dataloader.dataset[0])
+    # quit()
 
 
 

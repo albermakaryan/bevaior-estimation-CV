@@ -97,9 +97,10 @@ class RCNN_Dataset(Dataset):
         image = torch.as_tensor(image, dtype=torch.float32)
      
 
-        
+        # img = 'pixiz-06-12-2022-14-59-07_jpg.rf.8b6fd4ad3ff4bb6f71e7b070ea6160ff.jpg'
         annotations = annotation_extractor(image_file_name=img,
                                            annotation_file_path=self.annotation_file_path)
+                                        
         
         
         old_height,old_width = annotations['height'],annotations['width']
@@ -127,11 +128,15 @@ class RCNN_Dataset(Dataset):
         target['new_width'] = torch.tensor(new_width)
 
         
-    
-           
-        # ic(type(target['boxes']))
-        # ic(target['boxes'].shape)
+        # ic(img)
+        # ic(image)
+        # ic(target)
         # quit()
+
+        # if target['boxes'].shape == torch.Size([0]):
+        #     ic(target)
+        #     ic(img)
+        #     quit()
         return image,target  
 
 

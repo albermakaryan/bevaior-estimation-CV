@@ -3,7 +3,7 @@ import torch
 
 from model.validate import validate
 
-   
+from icecream import ic
 
 
 
@@ -33,6 +33,8 @@ def train(model,batch,optimizer,device):
     X,Y = batch
     X = [x.to(device) for x in X]
     Y = [{k:v.to(device) for k,v in y.items()} for y in Y]
+    
+    # ic("to device")
     
     # print(Y)
     # quit()
@@ -88,13 +90,15 @@ def train_rccn(model,optimizer,train_dataloader,validation_dataloader,
     """
     
     
+    # ic(len(train_dataloader))
+    n_train_batches = len(train_dataloader)
     for i in range(1,epochs+1):
 
 
             
         iteration_train_loss = []
         
-        for _, batch in enumerate(train_dataloader):
+        for i_batch, batch in enumerate(train_dataloader):
             
 
             try:
@@ -102,20 +106,29 @@ def train_rccn(model,optimizer,train_dataloader,validation_dataloader,
                                batch=batch,
                                optimizer=optimizer,
                                device=device)
+                # print(train_loss)
             except Exception as e:
                 print(e)
-                print(batch)
                 continue
             iteration_train_loss.append(train_loss.item())
+            
+            mean_train_loss = round(sum(iteration_train_loss)/len(iteration_train_loss),4)
+
+            ic(f"{i_batch} / {n_train_batches} Training loss: {mean_train_loss}\n")
             
         iteration_validation_loss = []
         
         for _,batch in enumerate(validation_dataloader):
             
-            validation_loss = validate(model=model,
-                                       batch=batch,
-                                       device=device)
-            iteration_validation_loss.append(validation_loss.item())
+            try:
+                
+                validation_loss = validate(model=model,
+                                        batch=batch,
+                                        device=device)
+                iteration_validation_loss.append(validation_loss.item())
+            except Exception as e:
+                print(e)
+                continue
             
         mean_train_loss = round(sum(iteration_train_loss)/len(iteration_train_loss),4)
         mean_validation_loss = round(sum(iteration_validation_loss)/len(iteration_validation_loss),4)

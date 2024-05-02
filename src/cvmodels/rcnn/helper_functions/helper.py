@@ -5,6 +5,50 @@ import torch
 
 
 
+def get_image_annotations(full_annotations_path,image_id=None,image_file_name=None):
+    
+    """
+    Returns the annotations for the given image id
+    
+    Parameters
+    ----------
+    full_annotations_path : str
+        path to the full annotations file.
+        
+    image_id : int
+        Image id.
+    
+    image_file_name : str
+        Name of the image file.
+        one of image_id or image_file_name should be provided.
+        
+    Returns
+    -------
+    list
+        list of annotations for the given image id.
+    
+    """
+    
+    if image_id is None and image_file_name is None:
+        raise ValueError("One of image_id or image_file_name should be provided.")
+    
+    with open(full_annotations_path,'r') as f:
+            
+        full_annotations = json.load(f)
+        
+        annotations = full_annotations['annotations']
+        
+        if image_id is None:
+            
+            images = full_annotations['images']
+            image_id = [image['id'] for image in images if image['file_name'] == image_file_name][0]
+            
+        image_annotations = [ann for ann in annotations if ann['image_id'] == image_id]
+            
+
+        return image_annotations
+
+
 def annotation_extractor(image_file_name,
                          annotation_file_path):
     """
