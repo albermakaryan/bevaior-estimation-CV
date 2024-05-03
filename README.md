@@ -27,7 +27,16 @@
     - **[data_engineering/](./src/data_engineering/)**
 
         - **[utils/](./src/data_engineering/utils/)**: Utility functions for data engineering.
+               - **[__init__.py](./src/data_engineering/utils/__init__.py)**: Package initializer.
+               - **[concat.py](./src/data_engineering/utils/concat.py)**: Utility functions to concat concat datasets.
+               - **[convert.py](./src/data_engineering/utils/convert.py)** : Utility functions to convert data set into YOLO format.
+               - **[data_preparation.py](./src/data_engineering/utils/data_preparation.py)** : Utitliy functions to solve balancing problem.
+               - **[functions.py](./src/data_engineering/utils/functions.py)**: Utility functions to automate simple tasks.
+               - **[resplit.py](./src/data_engineering/utils/resplit.py)** : Utility functions to resplit and combines by labels.
+               - **[visual.py](./src/data_engineering/utils/visual.py)**: Utility functions to automate visualizations.
         - **[data_engineering_results.ipynb](./src/data_engineering/data_engineering_results.ipynb)**: Steps of data preparation with visualizations.
-        - **[dem_reduction.ipynb](./src/data_engineering/dem_reduction.ipynb)**: Examples of dimensionality reduction
-        - **[]()**
+        - **[dem_reduction.ipynb](./src/data_engineering/dem_reduction.ipynb)**: Examples of dimensionality reduction.
+        - **[eda.ipynb](./src/data_engineering/eda.ipynb)** : EDA.
+        - **[main.py](./src/data_engineering/main.py)**: The main file for data engineering.
+- **[requirements.txt](/requirements.txt)**: The inclusion of a requirements.txt file makes it easier to recreate the project's environment and install the necessary dependencies.
     
