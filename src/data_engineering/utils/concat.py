@@ -191,8 +191,17 @@ def concat_annotations(source_root,dest_root):
         # save the data for each dataset
         dir_ann = {"images":total_images_for_each,"annotations":total_annotations_for_each,"categories":total_catagories}
         
-        with open(os.path.join(source_root,dir,"full_annotations.json"),'w') as file:
-            json.dump(dir_ann,file)
+        individual_dest_root = os.path.join(source_root,dir,"full_annotations.json")
+        
+        if os.path.exists(individual_dest_root):
+            answer = input(f"The destination file {individual_dest_root} already exists. Do you want to overwrite it? (y/n) ")
+            
+            if answer == "y":
+                with open(individual_dest_root,'w') as file:
+                    json.dump(dir_ann,file)
+            else:
+                print("Exiting")
+
             
         full_annotations_for_each[dir] = dir_ann
         
@@ -203,8 +212,19 @@ def concat_annotations(source_root,dest_root):
     if not os.path.exists(dest_root):
         os.makedirs(dest_root)
         
-    with open(os.path.join(dest_root,"full_annotations.json"),'w') as file:
-        json.dump(full_annotations,file)
+    dest_file_path = os.path.join(dest_root,"full_annotations.json")
+    
+    if os.path.exists(dest_file_path):
+        
+        answer = input(f"The destination file {dest_file_path} already exists. Do you want to overwrite it? (y/n) ")
+        
+        if answer == "y":
+            with open(dest_file_path,'w') as file:
+                json.dump(full_annotations,file)
+        else:
+            print("Exiting")
+            return full_annotations,full_annotations_for_each
+
         
     return full_annotations,full_annotations_for_each
                         
