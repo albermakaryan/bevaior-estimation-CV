@@ -4,7 +4,9 @@ from utils.resplit import resplit_by_label, resplit_by_nnps,resplit_sets_by_nnps
 
 if __name__ == "__main__":
     
-    root = "./data/coco_data"
+    root = "./data/coco_data/"
+    
+
     
     split = False
     

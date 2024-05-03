@@ -4,3 +4,4 @@ src/data_engineering/data/
 src/cvmodels/yolov7/
 src/cvmodels/rcnn/nnps_coco_format/*
 src/cvmodels/rcnn/trained_models/
+src/cvmodels/alexnet/nnps_coco_format/

@@ -43,11 +43,13 @@ def get_label_counts(annotation_file,df=False,numbers=False):
 
         annotations = full_annotations['annotations']
         categories = full_annotations['categories']
+
         id_to_name = {cat['id']:cat['name'] for cat in categories}
 
         category_counts = [ann['category_id'] for ann in annotations]
         category_counts = np.unique(category_counts,return_counts=True)
-        category_counts = {category_counts[0][i]:category_counts[1][i] for i in range(len(categories))}
+        n_categories = len(category_counts[1])
+        category_counts = {category_counts[0][i]:category_counts[1][i] for i in range(n_categories)}
 
         if df:
             category_counts = {id_to_name[key]:[value] for key,value in category_counts.items()}
@@ -63,3 +65,41 @@ def get_label_counts(annotation_file,df=False,numbers=False):
         return category_counts
     
     
+
+
+def get_number_of_images_annd_annotationes(annotations_file):
+    
+    with open(annotations_file,'r') as file:
+        
+        full_annotations = json.load(file)
+        
+        images = full_annotations['images']
+        annotations = full_annotations['annotations']   
+        
+        return len(images),len(annotations)
+    
+    
+def get_number_of_multilabels(annotations_file):
+    
+    with open(annotations_file,'r') as file:
+        
+        full_annotations = json.load(file)
+        
+        images = full_annotations['images']
+        annotations = full_annotations['annotations']   
+        
+        
+        multilabels = 0
+        multilabel_images = []
+        
+        for image in images:
+            
+            image_id = image['id']
+            image_annotations = get_image_annotations(image_id,annotations)
+            
+            if len(image_annotations) > 1:
+                multilabels += 1
+                multilabel_images.append(image)
+        
+        
+        return multilabels,multilabel_images

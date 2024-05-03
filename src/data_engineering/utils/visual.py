@@ -99,7 +99,7 @@ def plot_image_with_annotations_comparison(image_root_new,image_root_old,annotat
 
 
 
-def plot_image_with_annotations(image_root,annotations_file,number_of_iamges=8,multilabel=False):
+def plot_image_with_annotations(image_root,annotations_file,images_files=None,number_of_iamges=8,multilabel=False):
 
 
     with open(annotations_file,"r") as file:
@@ -107,6 +107,11 @@ def plot_image_with_annotations(image_root,annotations_file,number_of_iamges=8,m
         annotations_full = json.load(file)
 
         images = annotations_full['images']
+        
+        if images_files is not None:
+            images = [img for img in images if img['file_name'] in images_files]
+            number_of_iamges = len(images)
+            
         categories = annotations_full['categories']
 
         annotationes = annotations_full['annotations']
@@ -165,17 +170,30 @@ def plot_label_counts(counts,title=None):
 
 
     title = 'Counts of labels' if title is None else title
+    
+    n_lables = len(counts.Label)
+    max_count = counts.Count.max()  
 
 
     plt.figure(figsize=(10,7))
     plt.bar(counts['Label'],counts['Count'])
+    
 
     for i,value in enumerate(counts.Count):
+        
         percent = counts.Proportion.values[i]
-        plt.text(i, value, f"{str(value)}[{percent}%]", ha='center', va='bottom')
+        
+        text =  f"{str(value)}\n[{percent}%]"
+        
+        plt.text(i, value, text, ha='center', va='bottom')
 
-    if len(counts.Label) > 6:
+    if n_lables > 7:
         plt.xticks(rotation=45)
+        
+    add_lim = max_count * 0.15
+    
+    plt.ylim(0,max_count+add_lim)
+        
     plt.xlabel("Emotion")
     plt.ylabel("Count")
     plt.title(title)
