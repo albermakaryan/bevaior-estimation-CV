@@ -2,6 +2,6 @@ src/data_engineering/data/
 **/__pycache__/
 **/.ipynb_checkpoints
 src/cvmodels/yolov7/
-src/cvmodels/rcnn/nnps_coco_format/*
+src/cvmodels/rcnn/nnps_coco_format/
 src/cvmodels/rcnn/trained_models/
 src/cvmodels/alexnet/nnps_coco_format/
