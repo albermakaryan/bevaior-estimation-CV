@@ -4,7 +4,8 @@ import json
 from utils.functions import get_image_annotations
 import cv2
 
-
+from copy import deepcopy
+import numpy as np
 
 def get_annotated_image(original_image,annotationes,categories,
                            font = cv2.FONT_HERSHEY_SIMPLEX,
@@ -30,15 +31,21 @@ def get_annotated_image(original_image,annotationes,categories,
 
 
 
-def plot_image_with_annotations_comparison(image_root_new,image_root_old,annotations_file_balanced,annotations_file_original,number_of_iamges=8):
+def plot_image_with_annotations_comparison(image_root_new,image_root_old,annotations_file_balanced,annotations_file_original,number_of_iamges=8,shuffle=False):
 
 
     with open(annotations_file_balanced,"r") as file_new, open(annotations_file_original,'r') as file_orig:
 
         balanced_annotations_full = json.load(file_new)
         original_annotations_full = json.load(file_orig)
+        
+            
 
-        images = balanced_annotations_full['images']
+        images = deepcopy(balanced_annotations_full['images'])
+        
+        if shuffle:
+            np.random.shuffle(images)
+            
         categories = balanced_annotations_full['categories']
 
         new_annotationes = balanced_annotations_full['annotations']
@@ -87,10 +94,11 @@ def plot_image_with_annotations_comparison(image_root_new,image_root_old,annotat
             
             ax[i][0].imshow(old_image)
             ax[i][0].set_title("Old image")
-            
+            ax[i][0].axis("off")
+
             ax[i][1].imshow(new_image)
             ax[i][1].set_title("New image")        
-
+            ax[i][1].axis("off")
         plt.show()
 
 
